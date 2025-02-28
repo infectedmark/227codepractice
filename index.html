@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1 INPUT 1 OUTPUT TEMPLATE</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* STYLE FOR THE INPUT FIELD */
+        #charInput {
+            position: fixed;
+            transform: translate(-47vw, -45vh);
+            color: rgb(0, 0, 0);
+            display: flex;
+            justify-content: center;
+            border-radius: 5vh;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+        }
+
+        /* STYLE FOR THE SUBMIT BUTTON */
+        #submitButton {
+            position: fixed;
+            transform: translate(-40vw, -45vh);
+            color: rgb(0, 0, 0);
+            font-size: 2rem;
+            border: 0;
+            background:none;
+        }
+
+        /* STYLE FOR THE IMAGE */
+        #displayedImage {
+            display: none; /* This line is mandatory */
+            height: auto;
+            width: 30vw;
+            position: fixed;
+            transform: translate(25vw, 0);
+        }
+
+        #displayedText {
+            display: none; /* This line is mandatory */
+            height: auto;
+            width: 30vw;
+            position: fixed;
+            transform: translate(-25vw, 0);
+        }
+
+        #wordDisplay {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 18vw;
+            position: fixed;
+            transform: translate(-10vw, -15vh);
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <!-- INPUT FIELD FOR 1 CHARACTER -->
+    <input type="text" id="charInput" maxlength="1">
+
+    <!-- BUTTON TO DISPLAY IMAGE -->
+    <button onclick="displayImageAndWord();" id="submitButton">→</button>
+
+    <!-- IMAGE TO DISPLAY -->
+    <img class="container" id="displayedImage" src="" alt="Displayed Image">
+
+    <!-- WORD DISPLAY ELEMENT -->
+    <div id="wordDisplay" style="position: fixed; transform: translate(-25vw, 10vh); color: black;"></div>
+
+    <!-- Image Display Script Below -->
+    <script>
+        // Array of images
+        const images = [
+            "https://cdn.cosmos.so/fe8c8da6-8002-4118-ada8-eada525c3118?format=webp&w=1168", //A
+            "https://cdn.cosmos.so/aa214ebb-c5d5-4616-8999-a820b6369c74?format=webp&w=1168", //B
+            "https://cdn.cosmos.so/c7c7dc6a-77cb-4ed5-839f-857805b58026?format=webp&w=554", //C
+            "https://cdn.cosmos.so/d50981af-b4f5-4af9-b3c3-2183a098c092?format=webp&w=554", //D
+            "https://cdn.cosmos.so/ae3e5537-5d1b-44bb-ab4e-2a92284b5bea?format=webp&w=554", //E
+            "https://cdn.cosmos.so/7fe50bed-9e97-4f67-ba68-daeeab9b4c67?format=webp&w=554", //F
+            "https://cdn.cosmos.so/d7d3e38c-69cc-4a68-8d9d-38b1620aefdf?format=webp&w=554", //G
+            "https://cdn.cosmos.so/c1b421fc-61e7-48de-a498-ca9f8f9cf4f6?format=webp&w=554", //H
+            "https://cdn.cosmos.so/6b2ce0fc-41a7-4d0f-8f59-38fb18ef3c1d?format=webp&w=554", //I
+            "https://cdn.cosmos.so/c1f22e25-c0f1-4b69-9fd4-ab1b6459da44?format=webp&w=554", //J
+            "https://cdn.cosmos.so/9bcc2aa4-6e32-4ac1-9c30-60f67b9fc1c0?format=webp&w=554", //K
+            "https://cdn.cosmos.so/818143be-2224-43bf-be49-e4777db0b679?format=webp&w=554", //L
+            "https://cdn.cosmos.so/0471b211-4049-4d45-ab71-70f53870c302?format=webp&w=554", //M
+            "https://cdn.cosmos.so/955439fb-823b-4cca-b9ce-4f225e3f26aa?format=webp&w=554", //N
+            "https://cdn.cosmos.so/0543e59c-778e-4e79-b9f3-c16bd75b008f?format=webp&w=554", //O
+            "https://cdn.cosmos.so/59d03c53-e86f-4b67-b15d-a7e5decc9dc8?format=webp&w=554", //P
+            "https://cdn.cosmos.so/89fa5e25-7444-4367-b600-0b1ffc50eb91?format=webp&w=554", //Q
+            "https://cdn.cosmos.so/040c5e17-8828-496b-bb09-99026000f500?format=webp&w=554", //R
+            "https://cdn.cosmos.so/78ed27e2-6783-447b-aa64-2b0432e9228e?format=webp&w=554", //S
+            "https://cdn.cosmos.so/d2b7d193-da6b-4505-b578-ac5add23ffa5?format=webp&w=554", //T
+            "https://via.placeholder.com/300/FF00FF/FFFFFF?text=U", //U
+            "https://via.placeholder.com/300/FF00FF/FFFFFF?text=V", //V
+            "https://via.placeholder.com/300/FF00FF/FFFFFF?text=W", //W
+            "https://via.placeholder.com/300/FF00FF/FFFFFF?text=X", //X
+            "https://via.placeholder.com/300/FF00FF/FFFFFF?text=Y", //Y
+            "https://via.placeholder.com/300/FF00FF/FFFFFF?text=Z"  //Z
+        ];
+
+        const words = [
+            "APPLE", //A
+            "BUGS", //B
+            "CITRUS", //C
+            "DESK", //D
+            "ELEPHAS", //E
+            "FLY", //F
+            "GLOBE", //G
+            "HAT", //H
+            "ICELAND", //I
+            "JOKER", //J
+            "KING", //K
+            "LION", //L
+            "MOTHER", //M
+            "NASA", //N
+            "OWL", //O
+            "PEACOCK", //P
+            "Quince", //Q
+            "Raspberry", //R
+            "Strawberry", //S
+            "Tomato", //T
+            "Ugli fruit", //U
+            "Vanilla", //V
+            "Watermelon", //W
+            "Xigua", //X
+            "Yellow Passion Fruit", //Y
+            "Zucchini" //Z
+        ];
+
+        function displayImageAndWord() {
+            const input = document.getElementById("charInput").value.toUpperCase();
+            const imgElement = document.getElementById("displayedImage");
+            const wordElement = document.getElementById("wordDisplay");
+        document.addEventListener("mousemove", (event) => {
+                wordElement.style.left = event.pageX + "px";
+                wordElement.style.top = event.pageY + "px";
+            });
+            
+            // Assign an image based on character (A-Z)
+            const index = input.charCodeAt(0) - 65; // 'A' is 65 in ASCII
+            if (index >= 0 && index < images.length) {
+                imgElement.src = images[index];
+                imgElement.style.display = "block";
+                wordElement.innerText = words[index]; // Display corresponding word
+                wordElement.style.display = "block"; // Show the word
+                wordElement.style.transition = "left 0.2s, top 0.2s"; // Smooth movement
+            } else {
+                imgElement.src = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmtkdnJhMXY4Njd1cXR3MTM3MW1nMzZ1NXNhNHlhOHA0MWF2dDUzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13dRJkj5wgKq9q/giphy.gif";
+                imgElement.style.display = "block";
+                wordElement.innerText = ""; // Clear the word display
+                wordElement.style.display = "none"; // Hide the word
+            }
+        }
+    </script>
+</body>
+</html>
