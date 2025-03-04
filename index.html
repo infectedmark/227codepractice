@@ -6,13 +6,31 @@
     <title>1 INPUT 1 OUTPUT TEMPLATE</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* STYLE FOR THE NAVIGATION BAR */
+        nav {
+            display: flex;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: white;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            align-self: center;
+        }
+
+        input[type=range] {
+            align-self: center;
+            color: black;
+        }
+
         /* STYLE FOR THE INPUT FIELD */
         #charInput {
-            position: fixed;
-            transform: translate(-47vw, -45vh);
             color: rgb(0, 0, 0);
-            display: flex;
-            justify-content: center;
             border-radius: 5vh;
             width: 50px;
             height: 50px;
@@ -21,12 +39,10 @@
 
         /* STYLE FOR THE SUBMIT BUTTON */
         #submitButton {
-            position: fixed;
-            transform: translate(-40vw, -45vh);
             color: rgb(0, 0, 0);
             font-size: 2rem;
             border: 0;
-            background:none;
+            background: none;
         }
 
         /* STYLE FOR THE IMAGE */
@@ -43,31 +59,91 @@
             height: auto;
             width: 30vw;
             position: fixed;
-            transform: translate(-25vw, 0);
+            font-family: Helvetica, Arial, sans-serif; /* Updated to Helvetica */
+            font-weight: bold; 
+            font-size: 20vw; /* Default font size */
+            color: black;
+            transition: left 0.2s, top 0.2s; /* Smooth movement */
         }
 
-        #wordDisplay {
-            font-family: Arial, Helvetica, sans-serif;
-            font-weight: bold;
-            font-size: 18vw;
-            position: fixed;
-            transform: translate(-10vw, -15vh);
-            color: black;
+        /* STYLE FOR THE LEFT TEXT SECTION */
+        #textSection {
+            position: absolute; /* Change to absolute for dragging */
+            left: 0;
+            top: 60px; /* Below the nav */
+            width: 90%; /* Adjust width for responsiveness */
+            max-width: 200px; /* Limit max width */
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            z-index: 999; /* Ensure it appears above other content */
+            overflow-y: auto; /* Allow scrolling if content is too long */
+            max-height: 80vh; /* Limit height to avoid overflow */
+            cursor: move; /* Change cursor to indicate draggable */
         }
+
+        @media (max-width: 600px) {
+            #displayedImage {
+            display: none; /* This line is mandatory */
+            height: auto;
+            width: 100vw;
+            position: fixed;
+            transform: translate(0, -15vh);
+            }
+
+            #displayedText {
+            display: flex; /* This line is mandatory */
+            height: auto;
+            width: 30vw;
+            font-family: Helvetica, Arial, sans-serif; /* Updated to Helvetica */
+            font-weight: bold; 
+            font-size: 20vw; /* Default font size */
+            color: black;
+            }
+
+            div {
+                display: flex;
+                justify-content: center;
+                }
+
+            #textSection {
+            position: relative; /* Change to absolute for dragging */
+            left: 0;
+            top: 80vh; /* Below the nav */
+            width: 100%; /* Adjust width for responsiveness */
+            max-width: 99vw; /* Limit max width */
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            z-index: 999; /* Ensure it appears above other content */
+            overflow-y: auto; /* Allow scrolling if content is too long */
+            max-height: 80vh; /* Limit height to avoid overflow */
+            cursor: none; /* Change cursor to indicate draggable */
+                }
+
+        }
+
+
     </style>
 </head>
 <body>
-    <!-- INPUT FIELD FOR 1 CHARACTER -->
-    <input type="text" id="charInput" maxlength="1">
+    
+    <nav>
+        <!-- INPUT FIELD FOR 1 CHARACTER -->
+        <input type="text" id="charInput" maxlength="1">
+        <button onclick="displayImageAndWord();" id="submitButton">→</button><br>
+        <label for="textSize">Title Size:</label>
+        <input type="range" id="textSize" min="10" max="30" value="1" oninput="changeTextSize(this.value)">
+    </nav>
 
-    <!-- BUTTON TO DISPLAY IMAGE -->
-    <button onclick="displayImageAndWord();" id="submitButton">→</button>
+    <!-- NEW TEXT SECTION -->
+    <div id="textSection"></div>
 
     <!-- IMAGE TO DISPLAY -->
     <img class="container" id="displayedImage" src="" alt="Displayed Image">
 
-    <!-- WORD DISPLAY ELEMENT -->
-    <div id="wordDisplay" style="position: fixed; transform: translate(-25vw, 10vh); color: black;"></div>
+    <!-- DISPLAYED TEXT ELEMENT -->
+    <div id="displayedText" style="position: fixed; color: black;"></div>
 
     <!-- Image Display Script Below -->
     <script>
@@ -102,17 +178,17 @@
         ];
 
         const words = [
-            "APPLE", //A
-            "BUGS", //B
-            "CITRUS", //C
+            "Apple", //A
+            "Bugs", //B
+            "Citrus", //C
             "DESK", //D
-            "ELEPHAS", //E
+            "ELEPHANT", //E
             "FLY", //F
             "GLOBE", //G
             "HAT", //H
             "ICELAND", //I
-            "JOKER", //J
-            "KING", //K
+            "Jokers", //J
+            "King", //K
             "LION", //L
             "MOTHER", //M
             "NASA", //N
@@ -130,30 +206,100 @@
             "Zucchini" //Z
         ];
 
+        let wordDisplayX = 0;
+        let wordDisplayY = 0;
+
+        document.addEventListener("mousemove", (event) => {
+            wordDisplayX = event.pageX;
+            wordDisplayY = event.pageY;
+        });
+
+        function updateWordDisplayPosition() {
+            const displayedTextElement = document.getElementById("displayedText");
+            displayedTextElement.style.left = wordDisplayX + "px";
+            displayedTextElement.style.top = wordDisplayY + "px";
+            requestAnimationFrame(updateWordDisplayPosition);
+        }
+
+        // Call this function to start the position updates
+        updateWordDisplayPosition();
+
+        function changeTextSize(size) {
+            const displayedTextElement = document.getElementById("displayedText");
+            displayedTextElement.style.fontSize = size + "vw"; // Update font size for displayedText
+        }
+
         function displayImageAndWord() {
+            const charInput = document.getElementById("charInput");
+            charInput.addEventListener("mouseenter", () => {
+                displayedTextElement.style.display = "none"; // Hide the text when mouse enters input
+            });
+            charInput.addEventListener("mouseleave", () => {
+                displayedTextElement.style.display = "block"; // Show the text when mouse leaves input
+            });
             const input = document.getElementById("charInput").value.toUpperCase();
             const imgElement = document.getElementById("displayedImage");
-            const wordElement = document.getElementById("wordDisplay");
-        document.addEventListener("mousemove", (event) => {
-                wordElement.style.left = event.pageX + "px";
-                wordElement.style.top = event.pageY + "px";
-            });
+            const displayedTextElement = document.getElementById("displayedText");
+            const textSection = document.getElementById("textSection");
             
             // Assign an image based on character (A-Z)
             const index = input.charCodeAt(0) - 65; // 'A' is 65 in ASCII
             if (index >= 0 && index < images.length) {
                 imgElement.src = images[index];
                 imgElement.style.display = "block";
-                wordElement.innerText = words[index]; // Display corresponding word
-                wordElement.style.display = "block"; // Show the word
-                wordElement.style.transition = "left 0.2s, top 0.2s"; // Smooth movement
+                displayedTextElement.innerText = words[index]; // Display corresponding word
+                displayedTextElement.style.display = "block"; // Show the text
+                fetchWikipediaContent(words[index]); // Fetch content from Wikipedia
             } else {
                 imgElement.src = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmtkdnJhMXY4Njd1cXR3MTM3MW1nMzZ1NXNhNHlhOHA0MWF2dDUzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13dRJkj5wgKq9q/giphy.gif";
                 imgElement.style.display = "block";
-                wordElement.innerText = ""; // Clear the word display
-                wordElement.style.display = "none"; // Hide the word
+                displayedTextElement.innerText = ""; // Clear the text display
+                displayedTextElement.style.display = "none"; // Hide the text
+                textSection.innerText = ""; // Clear text section
             }
         }
+
+        function fetchWikipediaContent(query) {
+            const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&titles=${query}&prop=extracts&exintro&explaintext&redirects=1`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const page = Object.values(data.query.pages)[0];
+                    const textSection = document.getElementById("textSection");
+                    if (page.extract) {
+                        textSection.innerText = page.extract; // Display the fetched content
+                    } else {
+                        textSection.innerText = "No content found."; // Handle no content case
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching Wikipedia content:", error);
+                });
+        }
+    </script>
+    
+    <script>
+        // Make the text section draggable
+        const textSection = document.getElementById("textSection");
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        textSection.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            offsetX = e.clientX - textSection.getBoundingClientRect().left;
+            offsetY = e.clientY - textSection.getBoundingClientRect().top;
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                textSection.style.left = (e.clientX - offsetX) + "px";
+                textSection.style.top = (e.clientY - offsetY) + "px";
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
     </script>
 </body>
 </html>
